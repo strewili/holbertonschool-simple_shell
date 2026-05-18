@@ -1,0 +1,27 @@
+.TH SIMPLE_SHELL 1 "May 2026" "simple_shell" "User Commands"
+.SH NAME
+simple_shell \- simple UNIX command line interpreter
+.SH SYNOPSIS
+.B simple_shell
+.SH DESCRIPTION
+.B simple_shell
+is a small command line interpreter that reads commands from standard input and
+executes them with
+.BR execve (2).
+
+In interactive mode, the shell displays the prompt
+.B "$ "
+before waiting for input.
+
+This implementation supports command lines containing a command followed by
+optional arguments. It does not search the PATH, so commands must be executable
+paths such as
+.B /bin/ls
+or
+.B ./program.
+.SH EXAMPLES
+.B ./simple_shell
+
+.B $ /bin/echo hello
+.SH AUTHORS
+See the AUTHORS file.
