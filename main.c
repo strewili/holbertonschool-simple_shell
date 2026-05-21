@@ -1,103 +1,101 @@
-#define _POSIX_C_SOURCE 200809L
-
 #include "shell.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
 /**
- * main - Entry point for the simple shell.
- * @argc: Argument count.
- * @argv: Argument vector.
- *
- * Return: Always 0.
+ * main - entry point for simple shell
+ * @ac: argument count
+ * @av: argument vector
+ * Return: 0 on success
  */
-int main(int argc, char **argv)
+int main(int ac, char **av)
 {
-	shell_state_t state;
-	size_t size;
-	(void)argc;
-
-	state.name = argv[0];
-	state.line = NULL;
-	state.line_number = 0;
-	size = 0;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t nread;
+	char **args;
+	int loop_count = 0;
+	(void)ac;
 
 	while (1)
 	{
-		ssize_t read;
-		char **args;
-
+		loop_count++;
 		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "$ ", 2);
-		read = getline(&state.line, &size, stdin);
-		if (read == -1)
+			write(STDOUT_FILENO, "($) ", 4);
+
+		nread = getline(&line, &len, stdin);
+		if (nread == -1)
+		{
+			if (isatty(STDIN_FILENO))
+				write(STDOUT_FILENO, "\n", 1);
 			break;
-		state.line_number++;
-		args = split_line(state.line);
-		if (args == NULL)
-			continue;
-		execute_command(args, &state);
+		}
+		args = tokenize_input(line);
+		if (args && args[0])
+		{
+			if (strcmp(args[0], "exit") == 0)
+			{
+				free_args(args);
+				break;
+			}
+			execute_command(args, av[0], loop_count);
+		}
 		free_args(args);
 	}
-	free(state.line);
+	free(line);
 	return (0);
 }
 
 /**
- * execute_command - Execute a command with arguments.
- * @args: Command and argument vector.
- * @state: Current shell state.
- *
- * Return: 0 on success, -1 on failure.
+ * _strlen - returns string length
+ * @s: string
+ * Return: length
  */
-int execute_command(char **args, shell_state_t *state)
+int _strlen(char *s)
 {
-	pid_t child;
-	int status;
+	int i = 0;
 
-	if (args[0] == NULL)
+	if (!s)
 		return (0);
-	child = fork();
-	if (child == -1)
-	{
-		perror(state->name);
-		return (-1);
-	}
-	if (child == 0)
-	{
-		if (execve(args[0], args, environ) == -1)
-		{
-			print_error(state, args[0]);
-			exit(127);
-		}
-	}
-	else
-	{
-		wait(&status);
-	}
-	return (0);
+	while (s[i])
+		i++;
+	return (i);
 }
 
 /**
- * print_error - Print command-not-found error.
- * @state: Current shell state.
- * @command: Command that failed.
+ * _strdup - duplicates a string
+ * @str: string to copy
+ * Return: pointer to new string
  */
-void print_error(shell_state_t *state, char *command)
+char *_strdup(char *str)
 {
-	fprintf(stderr, "%s: %u: %s: not found\n",
-		state->name, state->line_number, command);
+	char *duplicate;
+	int i, len;
+
+	if (str == NULL)
+		return (NULL);
+	len = _strlen(str);
+	duplicate = malloc((len + 1) * sizeof(char));
+	if (duplicate == NULL)
+		return (NULL);
+	for (i = 0; i < len; i++)
+		duplicate[i] = str[i];
+	duplicate[len] = '\0';
+	return (duplicate);
 }
 
 /**
- * free_args - Free an argument vector.
- * @args: Argument vector to free.
+ * free_args - frees arguments array
+ * @args: array to free
  */
 void free_args(char **args)
 {
+	int i = 0;
+
+	if (!args)
+		return;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
 	free(args);
 }
