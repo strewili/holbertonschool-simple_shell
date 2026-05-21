@@ -35,6 +35,20 @@ char **tokenize_input(char *line)
 }
 
 /**
+ * check_builtin - checks if command is a builtin
+ * @args: arguments array
+ * Return: 1 if exit built-in handles execution termination, 0 otherwise
+ */
+int check_builtin(char **args)
+{
+	if (!args || !args[0])
+		return (0);
+	if (strcmp(args[0], "exit") == 0)
+		return (1);
+	return (0);
+}
+
+/**
  * execute_command - forks and executes given command
  * @args: arguments array
  * @prog_name: shell program name

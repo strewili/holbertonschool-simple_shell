@@ -31,7 +31,7 @@ int main(int ac, char **av)
 		args = tokenize_input(line);
 		if (args && args[0])
 		{
-			if (strcmp(args[0], "exit") == 0)
+			if (check_builtin(args))
 			{
 				free_args(args);
 				break;

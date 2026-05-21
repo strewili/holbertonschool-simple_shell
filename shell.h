@@ -14,6 +14,7 @@ extern char **environ;
 char **tokenize_input(char *line);
 char *find_path(char *command);
 int execute_command(char **args, char *prog_name, int loop_count);
+int check_builtin(char **args);
 int _strlen(char *s);
 char *_strdup(char *str);
 void free_args(char **args);
