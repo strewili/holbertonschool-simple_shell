@@ -11,6 +11,7 @@
 
 extern char **environ;
 
+void init_environ(void);
 void run_shell(void);
 char **tokenize_input(char *line);
 int execute_command(char **args);
@@ -25,7 +26,7 @@ void handle_sigint(int sig);
 int _setenv(const char *variable, const char *value);
 int _unsetenv(const char *variable);
 
-/* الدالات النصية المخصصة يدوياً - بدائل كاملة للمكتبة الجاهزة لضمان عبور التشيكر */
+/* الدالات النصية المخصصة يدوياً */
 int _strlen(const char *s);
 int _strcmp(const char *s1, const char *s2);
 char *_strdup(const char *s);
