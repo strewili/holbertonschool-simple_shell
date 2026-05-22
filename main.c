@@ -7,33 +7,8 @@
 int main(void)
 {
 	signal(SIGINT, handle_sigint);
-	init_environ(); /* تجهيز نسخة بيئة ديناميكية قابلة للتعديل والمسح */
 	run_shell();
 	return (0);
-}
-
-/**
- * init_environ - Creates a dynamic copy of the environ array on the heap
- */
-void init_environ(void)
-{
-	char **new_env;
-	int i = 0, count = 0;
-
-	while (environ[count])
-		count++;
-
-	/* حجز مساحة لـ 1024 متغير ليعطينا أمان كامل عند إضافة متغيرات جديدة مسبقاً */
-	new_env = malloc(sizeof(char *) * 1024);
-	if (!new_env)
-		return;
-
-	for (i = 0; i < count; i++)
-	{
-		new_env[i] = _strdup(environ[i]);
-	}
-	new_env[i] = NULL;
-	environ = new_env;
 }
 
 /**

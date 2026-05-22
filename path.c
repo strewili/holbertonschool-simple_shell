@@ -56,8 +56,6 @@ int _setenv(const char *variable, const char *value)
 	{
 		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
 		{
-			/* مسموح الـ free هنا لأننا نملك السيطرة الكاملة على الذاكرة الآن */
-			free(environ[i]);
 			environ[i] = new_env;
 			return (0);
 		}
@@ -86,7 +84,6 @@ int _unsetenv(const char *variable)
 	{
 		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
 		{
-			free(environ[i]);
 			j = i;
 			while (environ[j])
 			{

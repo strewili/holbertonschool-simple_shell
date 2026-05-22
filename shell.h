@@ -11,7 +11,6 @@
 
 extern char **environ;
 
-void init_environ(void);
 void run_shell(void);
 char **tokenize_input(char *line);
 int execute_command(char **args);
