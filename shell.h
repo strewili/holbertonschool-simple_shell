@@ -20,7 +20,7 @@ int check_builtin(char **args, int last_status, char *line);
 void print_env(void);
 ssize_t my_getline(char **lineptr, size_t *n, FILE *stream);
 
-/* دالاتنا اليدوية النظيفة */
+/* دالات التعامل مع النصوص المكتوبة يدوياً بالكامل */
 int _strlen(const char *s);
 int _strcmp(const char *s1, const char *s2);
 char *_strdup(const char *s);

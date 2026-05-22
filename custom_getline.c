@@ -1,11 +1,11 @@
 #include "shell.h"
 
 /**
- * my_getline - Reads an entire line from standard input
+ * my_getline - Reads an entire line from standard input without realloc
  * @lineptr: Buffer that stores the input line
  * @n: Size of the allocated buffer
  * @stream: Stream to read from
- * Return: Number of characters read, or -1 on failure/EOF
+ * Return: Number of characters read
  */
 ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 {
@@ -18,7 +18,6 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 	if (lineptr == NULL || n == NULL || stream == NULL)
 		return (-1);
 
-	/* حجز بفر ثابت ضخم جداً يتسع للأوامر الطويلة والفراغات الكثيرة بدون ملاحقة */
 	if (*lineptr == NULL || *n == 0)
 	{
 		*n = 4096;
@@ -42,8 +41,6 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 		}
 
 		c = buffer[buffer_pos++];
-
-		/* إذا قاربنا على نهاية البفر الضخم نتوقف حرصاً على الذاكرة */
 		if (count >= *n - 1)
 			break;
 
@@ -54,8 +51,6 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 	(*lineptr)[count] = '\0';
 	return (count);
 }
-
-/* === Custom Implementations of String Functions === */
 
 int _strlen(const char *s)
 {
@@ -122,7 +117,7 @@ char *_strchr(const char *s, char c)
 }
 
 /**
- * _strtok - Custom implementation of strtok function
+ * _strtok - Custom implementation of strtok function to satisfy Task 10
  */
 char *_strtok(char *str, const char *delim)
 {

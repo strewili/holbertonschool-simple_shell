@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * tokenize_input - Splits a string into tokens based on spaces
+ * tokenize_input - Splits a string into tokens using our custom _strtok
  * @line: The input string
  * Return: Array of pointers to tokens
  */
@@ -15,6 +15,7 @@ char **tokenize_input(char *line)
 	if (!tokens)
 		return (NULL);
 
+	/* الاعتماد الكامل على دالتنا اليدوية لتقفيل متطلبات Task 10 */
 	token = _strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
