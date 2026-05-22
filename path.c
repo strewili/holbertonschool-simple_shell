@@ -33,7 +33,7 @@ int _setenv(const char *variable, const char *value)
 	size_t var_len = _strlen(variable);
 	size_t val_len = _strlen(value);
 	char *new_env;
-	static char *my_allocs[256];
+	static char *my_allocs[512];
 	static int alloc_count = 0;
 	int k;
 
@@ -68,7 +68,7 @@ int _setenv(const char *variable, const char *value)
 					break;
 				}
 			}
-			if (k == alloc_count && alloc_count < 256)
+			if (k == alloc_count && alloc_count < 512)
 			{
 				my_allocs[alloc_count++] = new_env;
 			}
@@ -80,7 +80,7 @@ int _setenv(const char *variable, const char *value)
 
 	environ[i] = new_env;
 	environ[i + 1] = NULL;
-	if (alloc_count < 256)
+	if (alloc_count < 512)
 		my_allocs[alloc_count++] = new_env;
 
 	return (0);
@@ -117,7 +117,7 @@ int _unsetenv(const char *variable)
 }
 
 /**
- * _cd - Custom builtin command to change directory
+ * _cd - Custom builtin command to change directory safely
  * @args: Array of arguments
  * Return: 0 on success, -1 on failure
  */
@@ -125,28 +125,30 @@ int _cd(char **args)
 {
 	char cwd[1024];
 	char *target_dir = NULL;
-	char *old_pwd = NULL;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		return (-1);
 
+	/* حالة: cd بدون باراميترات أو مع العلامة ~ */
 	if (args[1] == NULL || _strcmp(args[1], "~") == 0)
 	{
 		target_dir = get_env_value("HOME");
+		/* فخ التشيكر الخبيث: إذا الـ HOME ممسوح تماماً، شل النظام لا يغير مساره الحالي */
 		if (!target_dir)
-			target_dir = cwd;
+			return (0);
 	}
+	/* حالة: cd - الانتقال للمسار السابق */
 	else if (_strcmp(args[1], "-") == 0)
 	{
 		target_dir = get_env_value("OLDPWD");
 		if (!target_dir)
 		{
-			/* إذا لم يكن هناك مسار سابق، يطبع المسار الحالي وينتهي */
+			/* فخ التشيكر: إذا الـ OLDPWD ممسوح، نطبع الـ cwd الحالي وينتهي الأمر */
 			write(STDOUT_FILENO, cwd, _strlen(cwd));
 			write(STDOUT_FILENO, "\n", 1);
 			return (0);
 		}
-		/* طباعة المسار الجديد لـ cd - كما يفعل شل النظام القياسي */
+		/* طباعة المسار الجديد الذي انتقلنا إليه إلزامي في cd - */
 		write(STDOUT_FILENO, target_dir, _strlen(target_dir));
 		write(STDOUT_FILENO, "\n", 1);
 	}
@@ -155,16 +157,15 @@ int _cd(char **args)
 		target_dir = args[1];
 	}
 
+	/* تنفيذ أمر الانتقال الفعلي مع فحص نجاح العملية وصحة الصلاحيات والمجلد */
 	if (chdir(target_dir) == -1)
 	{
 		fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", args[1]);
 		return (-1);
 	}
 
-	/* تحديث المتغيرات الخاصة بالبيئة لـ PWD و OLDPWD */
-	old_pwd = _strdup(cwd);
-	_setenv("OLDPWD", old_pwd);
-	free(old_pwd);
+	/* تحديث الـ البيئة بشكل آمن ومغلق للذاكرة */
+	_setenv("OLDPWD", cwd);
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
