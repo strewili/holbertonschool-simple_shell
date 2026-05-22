@@ -1,101 +1,51 @@
 #include "shell.h"
 
 /**
- * main - entry point for simple shell
- * @ac: argument count
- * @av: argument vector
- * Return: 0 on success
+ * main - Entry point for the simple shell
+ * Return: Always 0 (Success)
  */
-int main(int ac, char **av)
+int main(void)
+{
+	run_shell();
+	return (0);
+}
+
+/**
+ * run_shell - Runs the infinite loop of the shell interpreter
+ */
+void run_shell(void)
 {
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
 	char **args;
-	int loop_count = 0;
-	(void)ac;
+	int status = 1;
 
-	while (1)
+	while (status)
 	{
-		loop_count++;
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "($) ", 4);
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 		{
+			free(line);
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
-			break;
+			exit(EXIT_SUCCESS);
 		}
+
+		if (line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+
 		args = tokenize_input(line);
 		if (args && args[0])
 		{
-			if (check_builtin(args))
-			{
-				free_args(args);
-				break;
-			}
-			execute_command(args, av[0], loop_count);
+			status = check_builtin(args);
+			if (status == 1)
+				status = execute_command(args);
 		}
-		free_args(args);
+		free(args);
 	}
 	free(line);
-	return (0);
-}
-
-/**
- * _strlen - returns string length
- * @s: string
- * Return: length
- */
-int _strlen(char *s)
-{
-	int i = 0;
-
-	if (!s)
-		return (0);
-	while (s[i])
-		i++;
-	return (i);
-}
-
-/**
- * _strdup - duplicates a string
- * @str: string to copy
- * Return: pointer to new string
- */
-char *_strdup(char *str)
-{
-	char *duplicate;
-	int i, len;
-
-	if (str == NULL)
-		return (NULL);
-	len = _strlen(str);
-	duplicate = malloc((len + 1) * sizeof(char));
-	if (duplicate == NULL)
-		return (NULL);
-	for (i = 0; i < len; i++)
-		duplicate[i] = str[i];
-	duplicate[len] = '\0';
-	return (duplicate);
-}
-
-/**
- * free_args - frees arguments array
- * @args: array to free
- */
-void free_args(char **args)
-{
-	int i = 0;
-
-	if (!args)
-		return;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
 }

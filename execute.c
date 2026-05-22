@@ -1,94 +1,74 @@
 #include "shell.h"
 
 /**
- * tokenize_input - splits input line into tokens
- * @line: string input
- * Return: array of tokens
+ * tokenize_input - Splits a string into tokens based on spaces
+ * @line: The input string
+ * Return: Array of pointers to tokens
  */
 char **tokenize_input(char *line)
 {
-	char **args;
+	char **tokens;
 	char *token;
-	int i = 0, bufsize = 64;
+	int i = 0;
 
-	if (!line)
+	tokens = malloc(sizeof(char *) * 64);
+	if (!tokens)
 		return (NULL);
-	args = malloc(bufsize * sizeof(char *));
-	if (!args)
-		return (NULL);
+
 	token = strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
-		args[i] = _strdup(token);
+		tokens[i] = token;
 		i++;
-		if (i >= bufsize)
-		{
-			bufsize += 64;
-			args = realloc(args, bufsize * sizeof(char *));
-			if (!args)
-				return (NULL);
-		}
 		token = strtok(NULL, " \t\r\n\a");
 	}
-	args[i] = NULL;
-	return (args);
+	tokens[i] = NULL;
+	return (tokens);
 }
 
 /**
- * check_builtin - checks if command is a builtin
- * @args: arguments array
- * Return: 1 if exit built-in handles execution termination, 0 otherwise
+ * check_builtin - Checks if the command is a built-in like exit
+ * @args: Array of arguments
+ * Return: 0 if exit is triggered, 1 otherwise
  */
 int check_builtin(char **args)
 {
-	if (!args || !args[0])
-		return (0);
 	if (strcmp(args[0], "exit") == 0)
-		return (1);
-	return (0);
+	{
+		return (0);
+	}
+	return (1);
 }
 
 /**
- * execute_command - forks and executes given command
- * @args: arguments array
- * @prog_name: shell program name
- * @loop_count: line execution count
- * Return: 0 on success, 127 if not found
+ * execute_command - Forks a child process to execute an external command
+ * @args: Array of arguments
+ * Return: Always 1 to continue the shell loop
  */
-int execute_command(char **args, char *prog_name, int loop_count)
+int execute_command(char **args)
 {
-	char *actual_path;
-	pid_t child_pid;
+	pid_t pid;
 	int status;
 
-	if (!args || !args[0])
-		return (0);
-	actual_path = find_path(args[0]);
-	if (!actual_path)
+	pid = fork();
+	if (pid == 0)
 	{
-		fprintf(stderr, "%s: %d: %s: not found\n",
-				prog_name, loop_count, args[0]);
-		return (127);
-	}
-	child_pid = fork();
-	if (child_pid == 0)
-	{
-		if (execve(actual_path, args, environ) == -1)
+		if (execve(args[0], args, environ) == -1)
 		{
-			perror("Error");
-			free(actual_path);
-			free_args(args);
-			exit(1);
+			perror("./hsh");
+			exit(EXIT_FAILURE);
 		}
 	}
-	else if (child_pid < 0)
+	else if (pid < 0)
 	{
-		perror("Fork failed");
+		perror("./hsh");
 	}
 	else
 	{
-		wait(&status);
+		do {
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
-	free(actual_path);
-	return (0);
+
+	return (1);
 }

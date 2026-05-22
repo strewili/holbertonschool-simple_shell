@@ -11,12 +11,11 @@
 
 extern char **environ;
 
+void run_shell(void);
 char **tokenize_input(char *line);
-char *find_path(char *command);
-int execute_command(char **args, char *prog_name, int loop_count);
+int execute_command(char **args);
 int check_builtin(char **args);
-int _strlen(char *s);
-char *_strdup(char *str);
-void free_args(char **args);
+char *get_env_value(const char *name);
+char *find_path(char *command);
 
-#endif
+#endif /* SHELL_H */
