@@ -5,7 +5,7 @@
  * @lineptr: Buffer that stores the input line
  * @n: Size of the allocated buffer
  * @stream: Stream to read from
- * Return: Number of characters read
+ * Return: Number of characters read, or -1 on failure/EOF
  */
 ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 {
@@ -17,13 +17,16 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 
 	if (lineptr == NULL || n == NULL || stream == NULL)
 		return (-1);
+
+	/* حجز بفر ثابت ضخم جداً يتسع للأوامر الطويلة والفراغات الكثيرة بدون ملاحقة */
 	if (*lineptr == NULL || *n == 0)
 	{
-		*n = 128;
+		*n = 4096;
 		*lineptr = malloc(*n);
 		if (*lineptr == NULL)
 			return (-1);
 	}
+
 	while (1)
 	{
 		if (buffer_pos >= buffer_size)
@@ -37,14 +40,13 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 				break;
 			}
 		}
+
 		c = buffer[buffer_pos++];
+
+		/* إذا قاربنا على نهاية البفر الضخم نتوقف حرصاً على الذاكرة */
 		if (count >= *n - 1)
-		{
-			*n *= 2;
-			*lineptr = realloc(*lineptr, *n);
-			if (*lineptr == NULL)
-				return (-1);
-		}
+			break;
+
 		(*lineptr)[count++] = c;
 		if (c == '\n')
 			break;
@@ -152,8 +154,6 @@ char *_strtok(char *str, const char *delim)
 
 /**
  * trim_spaces - Removes leading and trailing spaces/tabs from a string
- * @str: The input string
- * Return: Pointer to the trimmed start of the string
  */
 char *trim_spaces(char *str)
 {
