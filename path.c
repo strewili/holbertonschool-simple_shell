@@ -39,10 +39,13 @@ char *find_path(char *command)
 		return (strdup(command));
 
 	path_env = get_env_value("PATH");
-	if (!path_env)
+	if (!path_env || strlen(path_env) == 0)
 		return (NULL);
 
 	path_copy = strdup(path_env);
+	if (!path_copy)
+		return (NULL);
+
 	cmd_len = strlen(command);
 	token = strtok(path_copy, ":");
 

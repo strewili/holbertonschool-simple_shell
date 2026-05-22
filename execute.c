@@ -18,8 +18,14 @@ char **tokenize_input(char *line)
 	token = strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
-		/* حجز ذاكرة لكل وسيط وتجنب مشاكل الإشارة للذاكرة الأصلية */
 		tokens[i] = strdup(token);
+		if (!tokens[i])
+		{
+			while (i > 0)
+				free(tokens[--i]);
+			free(tokens);
+			return (NULL);
+		}
 		i++;
 		token = strtok(NULL, " \t\r\n\a");
 	}

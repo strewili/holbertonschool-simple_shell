@@ -11,7 +11,7 @@ int main(void)
 }
 
 /**
- * free_args - Frees double pointer array of strings
+ * free_args - Frees double pointer array of strings safely
  * @args: Array of arguments
  */
 void free_args(char **args)
