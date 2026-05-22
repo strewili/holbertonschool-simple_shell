@@ -17,5 +17,7 @@ int execute_command(char **args);
 char *get_env_value(const char *name);
 char *find_path(char *command);
 void free_args(char **args);
+int check_builtin(char **args, int last_status, char *line);
+void print_env(void);
 
 #endif /* SHELL_H */

@@ -39,6 +39,7 @@ void run_shell(void)
 	char **args;
 	char *actual_command;
 	int last_exit_status = 0;
+	int builtin_status;
 
 	while (1)
 	{
@@ -60,11 +61,11 @@ void run_shell(void)
 		args = tokenize_input(line);
 		if (args && args[0])
 		{
-			if (strcmp(args[0], "exit") == 0)
+			builtin_status = check_builtin(args, last_exit_status, line);
+			if (builtin_status == 0) /* تم معالجة الـ Built-in بنجاح */
 			{
 				free_args(args);
-				free(line);
-				exit(last_exit_status);
+				continue;
 			}
 
 			actual_command = find_path(args[0]);

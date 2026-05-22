@@ -34,6 +34,44 @@ char **tokenize_input(char *line)
 }
 
 /**
+ * print_env - Prints the current environment variables
+ */
+void print_env(void)
+{
+	int i = 0;
+
+	while (environ[i])
+	{
+		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
+		write(STDOUT_FILENO, "\n", 1);
+		i++;
+	}
+}
+
+/**
+ * check_builtin - Checks and executes built-in commands like exit and env
+ * @args: Array of arguments
+ * @last_status: The exit status of the last command
+ * @line: Input line pointer to free on exit
+ * Return: 0 if a built-in was executed, 1 otherwise
+ */
+int check_builtin(char **args, int last_status, char *line)
+{
+	if (strcmp(args[0], "exit") == 0)
+	{
+		free_args(args);
+		free(line);
+		exit(last_status);
+	}
+	if (strcmp(args[0], "env") == 0)
+	{
+		print_env();
+		return (0);
+	}
+	return (1);
+}
+
+/**
  * execute_command - Forks a child process to execute an external command
  * @args: Array of arguments
  * Return: The exit status of the executed command
