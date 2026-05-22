@@ -24,6 +24,7 @@ void handle_sigint(int sig);
 
 int _setenv(const char *variable, const char *value);
 int _unsetenv(const char *variable);
+int _cd(char **args);
 
 /* الدالات النصية المخصصة يدوياً */
 int _strlen(const char *s);

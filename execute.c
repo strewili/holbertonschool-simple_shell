@@ -98,6 +98,11 @@ int check_builtin(char **args, int last_status, char *line)
 			_unsetenv(args[1]);
 		return (0);
 	}
+	if (_strcmp(args[0], "cd") == 0)
+	{
+		_cd(args);
+		return (0);
+	}
 	return (1);
 }
 

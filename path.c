@@ -33,7 +33,6 @@ int _setenv(const char *variable, const char *value)
 	size_t var_len = _strlen(variable);
 	size_t val_len = _strlen(value);
 	char *new_env;
-	/* مصفوفة مخصصة لتتبع النصوص المحجوزة يدوياً وتحريرها بأمان */
 	static char *my_allocs[256];
 	static int alloc_count = 0;
 	int k;
@@ -60,7 +59,6 @@ int _setenv(const char *variable, const char *value)
 	{
 		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
 		{
-			/* فحص ما إذا كنا نحن من قمنا بحجز هذا المؤشر سابقاً لنقوم بتحريره */
 			for (k = 0; k < alloc_count; k++)
 			{
 				if (my_allocs[k] == environ[i])
@@ -115,6 +113,64 @@ int _unsetenv(const char *variable)
 		}
 		i++;
 	}
+	return (0);
+}
+
+/**
+ * _cd - Custom builtin command to change directory
+ * @args: Array of arguments
+ * Return: 0 on success, -1 on failure
+ */
+int _cd(char **args)
+{
+	char cwd[1024];
+	char *target_dir = NULL;
+	char *old_pwd = NULL;
+
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+		return (-1);
+
+	if (args[1] == NULL || _strcmp(args[1], "~") == 0)
+	{
+		target_dir = get_env_value("HOME");
+		if (!target_dir)
+			target_dir = cwd;
+	}
+	else if (_strcmp(args[1], "-") == 0)
+	{
+		target_dir = get_env_value("OLDPWD");
+		if (!target_dir)
+		{
+			/* إذا لم يكن هناك مسار سابق، يطبع المسار الحالي وينتهي */
+			write(STDOUT_FILENO, cwd, _strlen(cwd));
+			write(STDOUT_FILENO, "\n", 1);
+			return (0);
+		}
+		/* طباعة المسار الجديد لـ cd - كما يفعل شل النظام القياسي */
+		write(STDOUT_FILENO, target_dir, _strlen(target_dir));
+		write(STDOUT_FILENO, "\n", 1);
+	}
+	else
+	{
+		target_dir = args[1];
+	}
+
+	if (chdir(target_dir) == -1)
+	{
+		fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", args[1]);
+		return (-1);
+	}
+
+	/* تحديث المتغيرات الخاصة بالبيئة لـ PWD و OLDPWD */
+	old_pwd = _strdup(cwd);
+	_setenv("OLDPWD", old_pwd);
+	free(old_pwd);
+
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+		_setenv("PWD", cwd);
+	}
+
 	return (0);
 }
 
