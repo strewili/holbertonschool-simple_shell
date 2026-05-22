@@ -37,6 +37,7 @@ void run_shell(void)
 	size_t len = 0;
 	ssize_t nread;
 	char **args;
+	char *trimmed_line;
 	char *actual_command;
 	int last_exit_status = 0;
 	int builtin_status;
@@ -58,7 +59,11 @@ void run_shell(void)
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		args = tokenize_input(line);
+		trimmed_line = trim_spaces(line);
+		if (_strlen(trimmed_line) == 0)
+			continue;
+
+		args = tokenize_input(trimmed_line);
 		if (args && args[0])
 		{
 			builtin_status = check_builtin(args, last_exit_status, line);

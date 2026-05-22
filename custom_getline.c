@@ -53,7 +53,7 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 	return (count);
 }
 
-/* === Custom Implementations of Banned String Functions === */
+/* === Custom Implementations of String Functions === */
 
 int _strlen(const char *s)
 {
@@ -121,9 +121,6 @@ char *_strchr(const char *s, char c)
 
 /**
  * _strtok - Custom implementation of strtok function
- * @str: String to tokenize
- * @delim: Delimiter characters
- * Return: Pointer to the next token, or NULL
  */
 char *_strtok(char *str, const char *delim)
 {
@@ -151,4 +148,29 @@ char *_strtok(char *str, const char *delim)
 		next_token++;
 	}
 	return (token_start);
+}
+
+/**
+ * trim_spaces - Removes leading and trailing spaces/tabs from a string
+ * @str: The input string
+ * Return: Pointer to the trimmed start of the string
+ */
+char *trim_spaces(char *str)
+{
+	char *end;
+
+	while (*str == ' ' || *str == '\t')
+		str++;
+
+	if (*str == '\0')
+		return (str);
+
+	end = str + _strlen(str) - 1;
+	while (end > str && (*end == ' ' || *end == '\t'))
+	{
+		*end = '\0';
+		end--;
+	}
+
+	return (str);
 }
