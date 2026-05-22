@@ -35,8 +35,13 @@ char *find_path(char *command)
 	if (!command)
 		return (NULL);
 
-	if (stat(command, &st) == 0)
-		return (strdup(command));
+	/* التعديل الجوهري: لا تسمح بالـ stat المباشر إلا لو كان فيه مسار صريح يحتوي على '/' */
+	if (strchr(command, '/') != NULL)
+	{
+		if (stat(command, &st) == 0)
+			return (strdup(command));
+		return (NULL);
+	}
 
 	path_env = get_env_value("PATH");
 	if (!path_env || strlen(path_env) == 0)
