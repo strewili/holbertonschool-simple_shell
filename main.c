@@ -6,8 +6,20 @@
  */
 int main(void)
 {
+	/* ربط الإشارة SIGINT بدالتنا المخصصة لمنع الخروج */
+	signal(SIGINT, handle_sigint);
 	run_shell();
 	return (0);
+}
+
+/**
+ * handle_sigint - Handles Ctrl+C (SIGINT) signal by printing a new prompt
+ * @sig: The signal number (unused)
+ */
+void handle_sigint(int sig)
+{
+	(void)sig;
+	write(STDOUT_FILENO, "\n($) ", 5);
 }
 
 /**
@@ -74,7 +86,6 @@ void run_shell(void)
 			}
 			else if (builtin_status == 2)
 			{
-				/* التقاط خطأ الـ exit غير القانوني وتحديث الحالة لـ 2 */
 				last_exit_status = 2;
 				free_args(args);
 				continue;

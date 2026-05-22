@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <signal.h>
 
 extern char **environ;
 
@@ -19,6 +20,7 @@ void free_args(char **args);
 int check_builtin(char **args, int last_status, char *line);
 void print_env(void);
 ssize_t my_getline(char **lineptr, size_t *n, FILE *stream);
+void handle_sigint(int sig);
 
 /* دالات التعامل مع النصوص المكتوبة يدوياً */
 int _strlen(const char *s);
