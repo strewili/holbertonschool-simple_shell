@@ -8,11 +8,11 @@
 char *get_env_value(const char *name)
 {
 	int i = 0;
-	size_t len = strlen(name);
+	size_t len = _strlen(name);
 
 	while (environ[i])
 	{
-		if (strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
+		if (_strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
 		{
 			return (environ[i] + len + 1);
 		}
@@ -23,40 +23,39 @@ char *get_env_value(const char *name)
 
 /**
  * find_path - Finds the full path of a command using PATH env
- * @command: The command name (e.g., ls)
+ * @command: The command name
  * Return: Full path string, or NULL if not found
  */
 char *find_path(char *command)
 {
 	char *path_env, *path_copy, *token, *full_path;
 	struct stat st;
-	size_t cmd_len, dir_len;
+	int cmd_len, dir_len;
 
 	if (!command)
 		return (NULL);
 
-	/* التعديل الجوهري: لا تسمح بالـ stat المباشر إلا لو كان فيه مسار صريح يحتوي على '/' */
-	if (strchr(command, '/') != NULL)
+	if (_strchr(command, '/') != NULL)
 	{
 		if (stat(command, &st) == 0)
-			return (strdup(command));
+			return (_strdup(command));
 		return (NULL);
 	}
 
 	path_env = get_env_value("PATH");
-	if (!path_env || strlen(path_env) == 0)
+	if (!path_env || _strlen(path_env) == 0)
 		return (NULL);
 
-	path_copy = strdup(path_env);
+	path_copy = _strdup(path_env);
 	if (!path_copy)
 		return (NULL);
 
-	cmd_len = strlen(command);
-	token = strtok(path_copy, ":");
+	cmd_len = _strlen(command);
+	token = _strtok(path_copy, ":");
 
 	while (token)
 	{
-		dir_len = strlen(token);
+		dir_len = _strlen(token);
 		full_path = malloc(dir_len + cmd_len + 2);
 		if (!full_path)
 		{
@@ -64,9 +63,16 @@ char *find_path(char *command)
 			return (NULL);
 		}
 
-		strcpy(full_path, token);
-		strcat(full_path, "/");
-		strcat(full_path, command);
+		{
+			int i, j;
+
+			for (i = 0; token[i]; i++)
+				full_path[i] = token[i];
+			full_path[i++] = '/';
+			for (j = 0; command[j]; j++)
+				full_path[i + j] = command[j];
+			full_path[i + j] = '\0';
+		}
 
 		if (stat(full_path, &st) == 0)
 		{
@@ -74,7 +80,7 @@ char *find_path(char *command)
 			return (full_path);
 		}
 		free(full_path);
-		token = strtok(NULL, ":");
+		token = _strtok(NULL, ":");
 	}
 	free(path_copy);
 	return (NULL);

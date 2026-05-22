@@ -15,10 +15,10 @@ char **tokenize_input(char *line)
 	if (!tokens)
 		return (NULL);
 
-	token = strtok(line, " \t\r\n\a");
+	token = _strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
-		tokens[i] = strdup(token);
+		tokens[i] = _strdup(token);
 		if (!tokens[i])
 		{
 			while (i > 0)
@@ -27,7 +27,7 @@ char **tokenize_input(char *line)
 			return (NULL);
 		}
 		i++;
-		token = strtok(NULL, " \t\r\n\a");
+		token = _strtok(NULL, " \t\r\n\a");
 	}
 	tokens[i] = NULL;
 	return (tokens);
@@ -42,7 +42,7 @@ void print_env(void)
 
 	while (environ[i])
 	{
-		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
+		write(STDOUT_FILENO, environ[i], _strlen(environ[i]));
 		write(STDOUT_FILENO, "\n", 1);
 		i++;
 	}
@@ -57,13 +57,13 @@ void print_env(void)
  */
 int check_builtin(char **args, int last_status, char *line)
 {
-	if (strcmp(args[0], "exit") == 0)
+	if (_strcmp(args[0], "exit") == 0)
 	{
 		free_args(args);
 		free(line);
 		exit(last_status);
 	}
-	if (strcmp(args[0], "env") == 0)
+	if (_strcmp(args[0], "env") == 0)
 	{
 		print_env();
 		return (0);
@@ -105,6 +105,5 @@ int execute_command(char **args)
 		if (WIFEXITED(status))
 			exit_code = WEXITSTATUS(status);
 	}
-
 	return (exit_code);
 }

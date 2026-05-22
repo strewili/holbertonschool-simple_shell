@@ -46,7 +46,6 @@ void run_shell(void)
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "($) ", 4);
 
-		/* استدعاء دالتنا الخاصة بدلاً من دالة السيستم */
 		nread = my_getline(&line, &len, stdin);
 		if (nread == -1)
 		{
