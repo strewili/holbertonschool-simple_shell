@@ -15,7 +15,6 @@ char **tokenize_input(char *line)
 	if (!tokens)
 		return (NULL);
 
-	/* الاعتماد الكامل على دالتنا اليدوية لتقفيل متطلبات Task 10 */
 	token = _strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
@@ -58,11 +57,19 @@ void print_env(void)
  */
 int check_builtin(char **args, int last_status, char *line)
 {
+	int custom_status;
+
 	if (_strcmp(args[0], "exit") == 0)
 	{
+		custom_status = last_status;
+		/* إذا كان هناك رقم ممرر مع الـ exit نقوم بمعالجته */
+		if (args[1] != NULL)
+		{
+			custom_status = _atoi(args[1]);
+		}
 		free_args(args);
 		free(line);
-		exit(last_status);
+		exit(custom_status);
 	}
 	if (_strcmp(args[0], "env") == 0)
 	{

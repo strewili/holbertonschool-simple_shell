@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * my_getline - Reads an entire line from standard input without realloc
+ * my_getline - Reads an entire line from standard input
  * @lineptr: Buffer that stores the input line
  * @n: Size of the allocated buffer
  * @stream: Stream to read from
@@ -116,9 +116,6 @@ char *_strchr(const char *s, char c)
 	return (NULL);
 }
 
-/**
- * _strtok - Custom implementation of strtok function to satisfy Task 10
- */
 char *_strtok(char *str, const char *delim)
 {
 	static char *next_token;
@@ -147,9 +144,6 @@ char *_strtok(char *str, const char *delim)
 	return (token_start);
 }
 
-/**
- * trim_spaces - Removes leading and trailing spaces/tabs from a string
- */
 char *trim_spaces(char *str)
 {
 	char *end;
@@ -168,4 +162,33 @@ char *trim_spaces(char *str)
 	}
 
 	return (str);
+}
+
+/**
+ * _atoi - Custom implementation to convert a string to an integer
+ * @s: The string to convert
+ * Return: The integer value parsed
+ */
+int _atoi(char *s)
+{
+	int i = 0;
+	unsigned int res = 0;
+	int sign = 1;
+
+	while (s[i])
+	{
+		if (s[i] == '-')
+			sign *= -1;
+
+		if (s[i] >= '0' && s[i] <= '9')
+		{
+			res = (res * 10) + (s[i] - '0');
+		}
+		else if (res > 0)
+		{
+			break;
+		}
+		i++;
+	}
+	return (res * sign);
 }

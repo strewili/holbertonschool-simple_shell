@@ -20,7 +20,7 @@ int check_builtin(char **args, int last_status, char *line);
 void print_env(void);
 ssize_t my_getline(char **lineptr, size_t *n, FILE *stream);
 
-/* دالات التعامل مع النصوص المكتوبة يدوياً بالكامل */
+/* دالات التعامل مع النصوص المكتوبة يدوياً */
 int _strlen(const char *s);
 int _strcmp(const char *s1, const char *s2);
 char *_strdup(const char *s);
@@ -28,5 +28,6 @@ char *_strchr(const char *s, char c);
 int _strncmp(const char *s1, const char *s2, size_t n);
 char *_strtok(char *str, const char *delim);
 char *trim_spaces(char *str);
+int _atoi(char *s);
 
 #endif /* SHELL_H */
