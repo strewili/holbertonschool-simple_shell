@@ -33,7 +33,7 @@ int _setenv(const char *variable, const char *value)
 	size_t var_len = _strlen(variable);
 	size_t val_len = _strlen(value);
 	char *new_env;
-	static char *my_allocs[512];
+	static char *my_allocs[1024];
 	static int alloc_count = 0;
 	int k;
 
@@ -68,7 +68,7 @@ int _setenv(const char *variable, const char *value)
 					break;
 				}
 			}
-			if (k == alloc_count && alloc_count < 512)
+			if (k == alloc_count && alloc_count < 1024)
 			{
 				my_allocs[alloc_count++] = new_env;
 			}
@@ -80,7 +80,7 @@ int _setenv(const char *variable, const char *value)
 
 	environ[i] = new_env;
 	environ[i + 1] = NULL;
-	if (alloc_count < 512)
+	if (alloc_count < 1024)
 		my_allocs[alloc_count++] = new_env;
 
 	return (0);
@@ -125,46 +125,49 @@ int _cd(char **args)
 {
 	char cwd[1024];
 	char *target_dir = NULL;
+	char *home_env = NULL;
+	char *old_env = NULL;
+	int print_path = 0;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		return (-1);
 
-	/* حالة: cd بدون باراميترات أو مع العلامة ~ */
 	if (args[1] == NULL || _strcmp(args[1], "~") == 0)
 	{
-		target_dir = get_env_value("HOME");
-		/* فخ التشيكر الخبيث: إذا الـ HOME ممسوح تماماً، شل النظام لا يغير مساره الحالي */
-		if (!target_dir)
+		home_env = get_env_value("HOME");
+		if (!home_env)
 			return (0);
+		target_dir = home_env;
 	}
-	/* حالة: cd - الانتقال للمسار السابق */
 	else if (_strcmp(args[1], "-") == 0)
 	{
-		target_dir = get_env_value("OLDPWD");
-		if (!target_dir)
+		old_env = get_env_value("OLDPWD");
+		if (!old_env)
 		{
-			/* فخ التشيكر: إذا الـ OLDPWD ممسوح، نطبع الـ cwd الحالي وينتهي الأمر */
 			write(STDOUT_FILENO, cwd, _strlen(cwd));
 			write(STDOUT_FILENO, "\n", 1);
 			return (0);
 		}
-		/* طباعة المسار الجديد الذي انتقلنا إليه إلزامي في cd - */
-		write(STDOUT_FILENO, target_dir, _strlen(target_dir));
-		write(STDOUT_FILENO, "\n", 1);
+		target_dir = old_env;
+		print_path = 1;
 	}
 	else
 	{
 		target_dir = args[1];
 	}
 
-	/* تنفيذ أمر الانتقال الفعلي مع فحص نجاح العملية وصحة الصلاحيات والمجلد */
 	if (chdir(target_dir) == -1)
 	{
 		fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", args[1]);
 		return (-1);
 	}
 
-	/* تحديث الـ البيئة بشكل آمن ومغلق للذاكرة */
+	if (print_path)
+	{
+		write(STDOUT_FILENO, target_dir, _strlen(target_dir));
+		write(STDOUT_FILENO, "\n", 1);
+	}
+
 	_setenv("OLDPWD", cwd);
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
