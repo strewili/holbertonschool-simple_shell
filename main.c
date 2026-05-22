@@ -11,6 +11,24 @@ int main(void)
 }
 
 /**
+ * free_args - Frees double pointer array of strings
+ * @args: Array of arguments
+ */
+void free_args(char **args)
+{
+	int i = 0;
+
+	if (!args)
+		return;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
+}
+
+/**
  * run_shell - Runs the infinite loop of the shell interpreter
  */
 void run_shell(void)
@@ -44,27 +62,25 @@ void run_shell(void)
 		{
 			if (strcmp(args[0], "exit") == 0)
 			{
-				free(args);
+				free_args(args);
 				free(line);
 				exit(last_exit_status);
 			}
 
-			/* البحث عن المسار الحقيقي للأمر قبل الـ fork */
 			actual_command = find_path(args[0]);
 			if (actual_command != NULL)
 			{
 				free(args[0]);
-				args[0] = actual_command; /* استبداله بالمسار الكامل */
+				args[0] = actual_command;
 				last_exit_status = execute_command(args);
 			}
 			else
 			{
-				/* طباعة الخطأ المطابق لـ sh بدون استدعاء fork */
 				fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
 				last_exit_status = 127;
 			}
 		}
-		free(args);
+		free_args(args);
 	}
 	free(line);
 }

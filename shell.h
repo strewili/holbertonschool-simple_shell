@@ -16,5 +16,6 @@ char **tokenize_input(char *line);
 int execute_command(char **args);
 char *get_env_value(const char *name);
 char *find_path(char *command);
+void free_args(char **args);
 
 #endif /* SHELL_H */
