@@ -72,6 +72,13 @@ void run_shell(void)
 				free_args(args);
 				continue;
 			}
+			else if (builtin_status == 2)
+			{
+				/* التقاط خطأ الـ exit غير القانوني وتحديث الحالة لـ 2 */
+				last_exit_status = 2;
+				free_args(args);
+				continue;
+			}
 
 			actual_command = find_path(args[0]);
 			if (actual_command != NULL)

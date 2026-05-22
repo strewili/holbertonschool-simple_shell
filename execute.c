@@ -53,7 +53,7 @@ void print_env(void)
  * @args: Array of arguments
  * @last_status: The exit status of the last command
  * @line: Input line pointer to free on exit
- * Return: 0 if a built-in was executed, 1 otherwise
+ * Return: 0 if a built-in was executed, 1 otherwise, 2 if exit format is invalid
  */
 int check_builtin(char **args, int last_status, char *line)
 {
@@ -62,10 +62,23 @@ int check_builtin(char **args, int last_status, char *line)
 	if (_strcmp(args[0], "exit") == 0)
 	{
 		custom_status = last_status;
-		/* إذا كان هناك رقم ممرر مع الـ exit نقوم بمعالجته */
 		if (args[1] != NULL)
 		{
 			custom_status = _atoi(args[1]);
+			/* إذا كان الرقم سالباً أو يحتوي على أحرف خبيثة */
+			if (custom_status == -1)
+			{
+				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
+				/* إذا كان الشل يشتغل بنظام الـ non-interactive (مثل الـ echo) لازم يقفل فوراً بـ 2 */
+				if (!isatty(STDIN_FILENO))
+				{
+					free_args(args);
+					free(line);
+					exit(2);
+				}
+				/* في الوضع التفاعلي يغير الـ status فقط ولا يقفل الشل */
+				return (2); 
+			}
 		}
 		free_args(args);
 		free(line);
