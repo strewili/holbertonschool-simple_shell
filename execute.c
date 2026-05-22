@@ -18,28 +18,13 @@ char **tokenize_input(char *line)
 	token = strtok(line, " \t\r\n\a");
 	while (token != NULL)
 	{
-		tokens[i] = token;
+		/* حجز ذاكرة لكل وسيط وتجنب مشاكل الإشارة للذاكرة الأصلية */
+		tokens[i] = strdup(token);
 		i++;
 		token = strtok(NULL, " \t\r\n\a");
 	}
 	tokens[i] = NULL;
 	return (tokens);
-}
-
-/**
- * check_builtin - Checks if the command is a built-in like exit
- * @args: Array of arguments
- * @last_status: The exit status of the last executed command
- * Return: 0 if exit is triggered, 1 otherwise
- */
-int check_builtin(char **args, int last_status)
-{
-	if (strcmp(args[0], "exit") == 0)
-	{
-		return (0);
-	}
-	(void)last_status;
-	return (1);
 }
 
 /**
@@ -59,7 +44,7 @@ int execute_command(char **args)
 		if (execve(args[0], args, environ) == -1)
 		{
 			perror("./hsh");
-			exit(2); /* خروج برقم 2 في حال لم يجد الأمر */
+			exit(2);
 		}
 	}
 	else if (pid < 0)
@@ -73,7 +58,6 @@ int execute_command(char **args)
 			waitpid(pid, &status, WUNTRACED);
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
 
-		/* لقط رقم الخروج الحقيقي للعملية الابنة */
 		if (WIFEXITED(status))
 			exit_code = WEXITSTATUS(status);
 	}
