@@ -20,6 +20,7 @@ void run_shell(void)
 	ssize_t nread;
 	char **args;
 	int status = 1;
+	int last_exit_status = 0; /* متغير لحفظ حالة آخر أمر */
 
 	while (status)
 	{
@@ -32,7 +33,7 @@ void run_shell(void)
 			free(line);
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
-			exit(EXIT_SUCCESS);
+			exit(last_exit_status); /* الخروج بآخر حالة عند نهاية الملف */
 		}
 
 		if (line[nread - 1] == '\n')
@@ -41,9 +42,16 @@ void run_shell(void)
 		args = tokenize_input(line);
 		if (args && args[0])
 		{
-			status = check_builtin(args);
-			if (status == 1)
-				status = execute_command(args);
+			/* نمرر الـ last_exit_status للـ builtin */
+			if (strcmp(args[0], "exit") == 0)
+			{
+				free(args);
+				free(line);
+				exit(last_exit_status);
+			}
+			
+			/* تنفيذ الأمر العادي وتحديث الـ status والحالة الأخيرة */
+			last_exit_status = execute_command(args);
 		}
 		free(args);
 	}

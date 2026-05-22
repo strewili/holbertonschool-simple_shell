@@ -14,8 +14,6 @@ extern char **environ;
 void run_shell(void);
 char **tokenize_input(char *line);
 int execute_command(char **args);
-int check_builtin(char **args);
-char *get_env_value(const char *name);
-char *find_path(char *command);
+int check_builtin(char **args, int last_status);
 
 #endif /* SHELL_H */
