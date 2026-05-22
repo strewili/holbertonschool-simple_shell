@@ -33,7 +33,6 @@ int _setenv(const char *variable, const char *value)
 	size_t var_len = _strlen(variable);
 	size_t val_len = _strlen(value);
 	char *new_env;
-	char *old_env = NULL;
 
 	if (!variable || !value)
 		return (-1);
@@ -57,10 +56,8 @@ int _setenv(const char *variable, const char *value)
 	{
 		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
 		{
-			old_env = environ[i];
+			/* استبدال المؤشر مباشرة دون عمل free للمؤشر الأصلي التابع للنظام */
 			environ[i] = new_env;
-			/* تحرير الذاكرة القديمة فوراً لمنع تسريب الـ Valgrind */
-			free(old_env);
 			return (0);
 		}
 		i++;
@@ -80,7 +77,6 @@ int _unsetenv(const char *variable)
 {
 	int i = 0, j;
 	size_t var_len = _strlen(variable);
-	char *old_env = NULL;
 
 	if (!variable)
 		return (-1);
@@ -89,15 +85,12 @@ int _unsetenv(const char *variable)
 	{
 		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
 		{
-			old_env = environ[i];
 			j = i;
 			while (environ[j])
 			{
 				environ[j] = environ[j + 1];
 				j++;
 			}
-			/* تحرير ذاكرة العنصر المحذوف عشان ما تسبب Leak */
-			free(old_env);
 			return (0);
 		}
 		i++;
