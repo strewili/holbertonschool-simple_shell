@@ -6,15 +6,14 @@
  */
 int main(void)
 {
-	/* ربط الإشارة SIGINT بدالتنا المخصصة لمنع الخروج */
 	signal(SIGINT, handle_sigint);
 	run_shell();
 	return (0);
 }
 
 /**
- * handle_sigint - Handles Ctrl+C (SIGINT) signal by printing a new prompt
- * @sig: The signal number (unused)
+ * handle_sigint - Handles Ctrl+C (SIGINT) signal
+ * @sig: The signal number
  */
 void handle_sigint(int sig)
 {

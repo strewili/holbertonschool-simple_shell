@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * my_getline - Reads an entire line from standard input
+ * my_getline - Reads an entire line from standard input safely without realloc
  * @lineptr: Buffer that stores the input line
  * @n: Size of the allocated buffer
  * @stream: Stream to read from
@@ -164,11 +164,6 @@ char *trim_spaces(char *str)
 	return (str);
 }
 
-/**
- * _atoi - Strictly checks and converts positive number string to integer
- * @s: The input string
- * Return: The parsed positive integer, or -1 if illegal (contains letters/signs)
- */
 int _atoi(char *s)
 {
 	int i = 0;
@@ -177,13 +172,11 @@ int _atoi(char *s)
 	if (!s || s[i] == '\0')
 		return (-1);
 
-	/* لو فيه أي علامة سالب أو موجب أو حرف في البداية أو الوسط نعتبره خطأ صريح */
 	while (s[i])
 	{
 		if (s[i] >= '0' && s[i] <= '9')
 		{
 			res = (res * 10) + (s[i] - '0');
-			/* حماية من الـ overflow للأرقام الضخمة جداً */
 			if (res > 2147483647)
 				return (-1);
 		}

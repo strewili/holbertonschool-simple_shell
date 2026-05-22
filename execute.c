@@ -49,11 +49,11 @@ void print_env(void)
 }
 
 /**
- * check_builtin - Checks and executes built-in commands like exit and env
+ * check_builtin - Checks and executes built-in commands
  * @args: Array of arguments
  * @last_status: The exit status of the last command
  * @line: Input line pointer to free on exit
- * Return: 0 if a built-in was executed, 1 otherwise, 2 if exit format is invalid
+ * Return: 0 if executed, 1 otherwise, 2 if illegal status
  */
 int check_builtin(char **args, int last_status, char *line)
 {
@@ -65,19 +65,16 @@ int check_builtin(char **args, int last_status, char *line)
 		if (args[1] != NULL)
 		{
 			custom_status = _atoi(args[1]);
-			/* إذا كان الرقم سالباً أو يحتوي على أحرف خبيثة */
 			if (custom_status == -1)
 			{
 				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
-				/* إذا كان الشل يشتغل بنظام الـ non-interactive (مثل الـ echo) لازم يقفل فوراً بـ 2 */
 				if (!isatty(STDIN_FILENO))
 				{
 					free_args(args);
 					free(line);
 					exit(2);
 				}
-				/* في الوضع التفاعلي يغير الـ status فقط ولا يقفل الشل */
-				return (2); 
+				return (2);
 			}
 		}
 		free_args(args);
@@ -87,6 +84,18 @@ int check_builtin(char **args, int last_status, char *line)
 	if (_strcmp(args[0], "env") == 0)
 	{
 		print_env();
+		return (0);
+	}
+	if (_strcmp(args[0], "setenv") == 0)
+	{
+		if (args[1] && args[2])
+			_setenv(args[1], args[2]);
+		return (0);
+	}
+	if (_strcmp(args[0], "unsetenv") == 0)
+	{
+		if (args[1])
+			_unsetenv(args[1]);
 		return (0);
 	}
 	return (1);
