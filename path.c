@@ -33,6 +33,10 @@ int _setenv(const char *variable, const char *value)
 	size_t var_len = _strlen(variable);
 	size_t val_len = _strlen(value);
 	char *new_env;
+	/* مصفوفة مخصصة لتتبع النصوص المحجوزة يدوياً وتحريرها بأمان */
+	static char *my_allocs[256];
+	static int alloc_count = 0;
+	int k;
 
 	if (!variable || !value)
 		return (-1);
@@ -42,20 +46,34 @@ int _setenv(const char *variable, const char *value)
 		return (-1);
 
 	{
-		size_t j, k;
+		size_t j, m;
 
 		for (j = 0; variable[j]; j++)
 			new_env[j] = variable[j];
 		new_env[j++] = '=';
-		for (k = 0; value[k]; k++)
-			new_env[j + k] = value[k];
-		new_env[j + k] = '\0';
+		for (m = 0; value[m]; m++)
+			new_env[j + m] = value[m];
+		new_env[j + m] = '\0';
 	}
 
 	while (environ[i])
 	{
 		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
 		{
+			/* فحص ما إذا كنا نحن من قمنا بحجز هذا المؤشر سابقاً لنقوم بتحريره */
+			for (k = 0; k < alloc_count; k++)
+			{
+				if (my_allocs[k] == environ[i])
+				{
+					free(environ[i]);
+					my_allocs[k] = new_env;
+					break;
+				}
+			}
+			if (k == alloc_count && alloc_count < 256)
+			{
+				my_allocs[alloc_count++] = new_env;
+			}
 			environ[i] = new_env;
 			return (0);
 		}
@@ -64,6 +82,9 @@ int _setenv(const char *variable, const char *value)
 
 	environ[i] = new_env;
 	environ[i + 1] = NULL;
+	if (alloc_count < 256)
+		my_allocs[alloc_count++] = new_env;
+
 	return (0);
 }
 
