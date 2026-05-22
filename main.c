@@ -46,7 +46,8 @@ void run_shell(void)
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "($) ", 4);
 
-		nread = getline(&line, &len, stdin);
+		/* استدعاء دالتنا الخاصة بدلاً من دالة السيستم */
+		nread = my_getline(&line, &len, stdin);
 		if (nread == -1)
 		{
 			free(line);
@@ -62,7 +63,7 @@ void run_shell(void)
 		if (args && args[0])
 		{
 			builtin_status = check_builtin(args, last_exit_status, line);
-			if (builtin_status == 0) /* تم معالجة الـ Built-in بنجاح */
+			if (builtin_status == 0)
 			{
 				free_args(args);
 				continue;

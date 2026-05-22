@@ -19,5 +19,6 @@ char *find_path(char *command);
 void free_args(char **args);
 int check_builtin(char **args, int last_status, char *line);
 void print_env(void);
+ssize_t my_getline(char **lineptr, size_t *n, FILE *stream);
 
 #endif /* SHELL_H */
