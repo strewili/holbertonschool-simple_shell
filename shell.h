@@ -27,7 +27,7 @@ int _setenv(const char *variable, const char *value);
 int _unsetenv(const char *variable);
 int _cd(char **args);
 
-/* الدالات النصية المخصصة يدوياً */
+/* Custom string helper functions */
 int _strlen(const char *s);
 int _strcmp(const char *s1, const char *s2);
 char *_strdup(const char *s);

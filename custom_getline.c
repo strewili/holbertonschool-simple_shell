@@ -9,12 +9,9 @@
  */
 ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 {
-	static char buffer[1024];
-	static size_t buffer_pos;
-	static size_t buffer_size;
 	size_t count = 0;
-	ssize_t bytes_read;
-	char c;
+	int c;
+	char *new_line;
 
 	if (lineptr == NULL || n == NULL || stream == NULL)
 		return (-1);
@@ -27,29 +24,22 @@ ssize_t my_getline(char **lineptr, size_t *n, FILE *stream)
 			return (-1);
 	}
 
-	while (1)
+	while ((c = fgetc(stream)) != EOF)
 	{
-		if (buffer_pos >= buffer_size)
+		if (count + 1 >= *n)
 		{
-			bytes_read = read(fileno(stream), buffer, 1024);
-			buffer_pos = 0;
-			if (bytes_read <= 0)
-			{
-				if (count == 0)
-					return (-1);
-				break;
-			}
-			buffer_size = bytes_read;
+			new_line = realloc(*lineptr, *n + 4096);
+			if (new_line == NULL)
+				return (-1);
+			*lineptr = new_line;
+			*n += 4096;
 		}
-
-		c = buffer[buffer_pos++];
-		if (count >= *n - 1)
-			break;
-
 		(*lineptr)[count++] = c;
 		if (c == '\n')
 			break;
 	}
+	if (count == 0 && c == EOF)
+		return (-1);
 	(*lineptr)[count] = '\0';
 	return (count);
 }
