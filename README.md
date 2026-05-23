@@ -603,5 +603,140 @@ If unsetenv fails, print to stderr.
 If cd fails, print to stderr.
 Errors should not crash the shell.
 The shell should continue after recoverable errors.
+Example: file input
+File content:
+
+echo hello
+
+pwd
+
+ls
+
+Command:
+
+./hsh commands.txt
+
+The shell reads from commands.txt.
+
+The shell does not print a prompt.
+
+The shell executes all commands.
+
+The shell exits at the end of the file.
+
+Testing
+Testing should include interactive behavior.
+
+Testing should include non-interactive behavior.
+
+Testing should include file input mode.
+
+Testing should include commands with arguments.
+
+Testing should include PATH commands.
+
+Testing should include direct path commands.
+
+Testing should include env.
+
+Testing should include exit.
+
+Testing should include setenv.
+
+Testing should include unsetenv.
+
+Testing should include cd.
+
+Testing should include invalid commands.
+
+Testing should include empty lines.
+
+Testing should include Ctrl+C manually.
+
+Testing should include EOF manually.
+
+Example compile test:
+
+gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
+
+Example command test:
+
+echo "echo hello" | ./hsh
+
+Expected output:
+
+hello
+
+Example invalid command test:
+
+echo "notacommand" | ./hsh
+
+Expected behavior:
+
+The shell prints an error.
+
+Betty Style
+The project should follow Betty style.
+
+Functions should have proper comments.
+
+Lines should not be too long.
+
+Indentation should be correct.
+
+Unused variables should be removed.
+
+Header files should use include guards.
+
+Each file should include only what it needs.
+
+The code should compile with no warnings.
+
+Run Betty if available:
+
+betty *.c *.h
+
+Limitations
+This shell is educational.
+
+It is not Bash.
+
+It may not support pipes.
+
+It may not support redirections.
+
+It may not support job control.
+
+It may not support advanced quoting.
+
+It may not support command substitution.
+
+It may not support all shell syntax.
+
+The goal is to implement required project features clearly.
+
+Authors
+Shouq Alqarni
+
+Baydir Aldossari
+
+Final Notes
+Simple Shell is a small project with many important lessons.
+
+It connects C programming with operating system behavior.
+
+It shows how commands become processes.
+
+It shows how environment variables are passed.
+
+It shows why error handling matters.
+
+It shows why memory management matters.
+
+It shows why testing matters.
+
+It gives a practical view of UNIX internals.
+
+It is a strong foundation for understanding real shells.
 ```text
 holbertonschool-simple_shell
