@@ -1,59 +1,40 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#define _POSIX_C_SOURCE 200809L
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
-
-#define HIST_MAX 4096
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <signal.h>
 
 extern char **environ;
 
-typedef struct alias_s
-{
-	char *name;
-	char *value;
-	struct alias_s *next;
-} alias_t;
-
-typedef struct shell_s
-{
-	char *name;
-	FILE *input;
-	int interactive;
-	unsigned int line_number;
-	int last_status;
-	alias_t *aliases;
-	char *history[HIST_MAX];
-	int history_count;
-	int history_base;
-	char *history_file;
-} shell_t;
-
-void init_shell(shell_t *shell, char **argv, FILE *input, int interactive);
-void free_shell(shell_t *shell);
-int shell_loop(shell_t *shell);
-int run_line(shell_t *shell, char *line);
-char **split_words(char *line);
-void free_words(char **words);
-char *strip_comments(char *line);
-char *expand_vars(shell_t *shell, char *line);
-char **apply_alias(shell_t *shell, char **args);
-int execute_args(shell_t *shell, char **args);
-int run_builtin(shell_t *shell, char **args, int *done);
-int builtin_alias(shell_t *shell, char **args);
+void run_shell(void);
+void run_shell_file(FILE *input);
+char **tokenize_input(char *line);
+int execute_command(char **args);
+char *get_env_value(const char *name);
 char *find_path(char *command);
-char *_getenv(const char *name);
-int set_alias(shell_t *shell, char *name, char *value);
-alias_t *find_alias(shell_t *shell, char *name);
-void print_alias(alias_t *alias);
-void free_aliases(alias_t *alias);
-void history_load(shell_t *shell);
-void history_add(shell_t *shell, char *line);
-void history_save(shell_t *shell);
-void print_history(shell_t *shell);
-void shell_error(shell_t *shell, char *msg);
-void command_error(shell_t *shell, char *command, char *msg);
+void free_args(char **args);
+int check_builtin(char **args, int last_status, char *line);
+void print_env(void);
+ssize_t my_getline(char **lineptr, size_t *n, FILE *stream);
+void handle_sigint(int sig);
 
-#endif
+int _setenv(const char *variable, const char *value);
+int _unsetenv(const char *variable);
+int _cd(char **args);
+
+/* الدالات النصية المخصصة يدوياً */
+int _strlen(const char *s);
+int _strcmp(const char *s1, const char *s2);
+char *_strdup(const char *s);
+char *_strchr(const char *s, char c);
+int _strncmp(const char *s1, const char *s2, size_t n);
+char *_strtok(char *str, const char *delim);
+char *trim_spaces(char *str);
+int _atoi(char *s);
+
+#endif /* SHELL_H */f
