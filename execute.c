@@ -67,7 +67,8 @@ int check_builtin(char **args, int last_status, char *line)
 			custom_status = _atoi(args[1]);
 			if (custom_status == -1)
 			{
-				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n", args[1]);
+				fprintf(stderr, "./hsh: 1: exit: Illegal number: %s\n",
+					args[1]);
 				if (!isatty(STDIN_FILENO))
 				{
 					free_args(args);
@@ -89,18 +90,29 @@ int check_builtin(char **args, int last_status, char *line)
 	if (_strcmp(args[0], "setenv") == 0)
 	{
 		if (args[1] && args[2])
-			_setenv(args[1], args[2]);
+		{
+			if (_setenv(args[1], args[2]) == -1)
+				fprintf(stderr, "./hsh: setenv failed\n");
+		}
+		else
+			fprintf(stderr, "Usage: setenv VARIABLE VALUE\n");
 		return (0);
 	}
 	if (_strcmp(args[0], "unsetenv") == 0)
 	{
 		if (args[1])
-			_unsetenv(args[1]);
+		{
+			if (_unsetenv(args[1]) == -1)
+				fprintf(stderr, "./hsh: unsetenv failed\n");
+		}
+		else
+			fprintf(stderr, "Usage: unsetenv VARIABLE\n");
 		return (0);
 	}
 	if (_strcmp(args[0], "cd") == 0)
 	{
-		_cd(args);
+		if (_cd(args) == -1)
+			fprintf(stderr, "./hsh: cd failed\n");
 		return (0);
 	}
 	return (1);
@@ -141,4 +153,85 @@ int execute_command(char **args)
 			exit_code = WEXITSTATUS(status);
 	}
 	return (exit_code);
+}
+
+/**
+ * get_env_value - Gets the value of an environment variable
+ * @name: Name of the environment variable
+ *
+ * Return: Pointer to the value, or NULL
+ */
+char *get_env_value(const char *name)
+{
+	int i;
+	int len;
+
+	if (name == NULL)
+		return (NULL);
+
+	len = _strlen(name);
+	for (i = 0; environ[i] != NULL; i++)
+	{
+		if (_strncmp(environ[i], name, len) == 0 &&
+		    environ[i][len] == '=')
+			return (environ[i] + len + 1);
+	}
+	return (NULL);
+}
+
+/**
+ * find_path - Finds command full path using PATH
+ * @command: Command name
+ *
+ * Return: Full path allocated with malloc, or NULL
+ */
+char *find_path(char *command)
+{
+	char *path;
+	char *path_copy;
+	char *dir;
+	char *full_path;
+	int len;
+
+	if (command == NULL)
+		return (NULL);
+
+	if (_strchr(command, '/') != NULL)
+		return (_strdup(command));
+
+	path = get_env_value("PATH");
+	if (path == NULL)
+		return (NULL);
+
+	path_copy = _strdup(path);
+	if (path_copy == NULL)
+		return (NULL);
+
+	dir = _strtok(path_copy, ":");
+	while (dir != NULL)
+	{
+		len = _strlen(dir) + _strlen(command) + 2;
+		full_path = malloc(sizeof(char) * len);
+		if (full_path == NULL)
+		{
+			free(path_copy);
+			return (NULL);
+		}
+
+		full_path[0] = '\0';
+		strcat(full_path, dir);
+		strcat(full_path, "/");
+		strcat(full_path, command);
+
+		if (access(full_path, X_OK) == 0)
+		{
+			free(path_copy);
+			return (full_path);
+		}
+
+		free(full_path);
+		dir = _strtok(NULL, ":");
+	}
+	free(path_copy);
+	return (NULL);
 }
