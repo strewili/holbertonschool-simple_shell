@@ -3,25 +3,105 @@
 simple_shell \- simple UNIX command line interpreter
 .SH SYNOPSIS
 .B simple_shell
+.br
+.B simple_shell
+.I filename
 .SH DESCRIPTION
 .B simple_shell
-is a small command line interpreter that reads commands from standard input and
-executes them with
+is a simple UNIX command line interpreter written in C.
+
+It reads commands from standard input, parses them, searches for executable
+programs, creates child processes, and executes commands using
 .BR execve (2).
 
-In interactive mode, the shell displays the prompt
-.B "$ "
-before waiting for input.
+In interactive mode, the shell displays the prompt:
+.B "($) "
+before waiting for user input.
 
-This implementation supports command lines containing a command followed by
-optional arguments. It does not search the PATH, so commands must be executable
-paths such as
-.B /bin/ls
-or
-.B ./program.
+The shell can also read commands from a file when a filename is passed as an
+argument.
+.SH FEATURES
+This shell supports:
+.IP \(bu 2
+Interactive and non-interactive modes
+.IP \(bu 2
+Command execution with arguments
+.IP \(bu 2
+PATH lookup
+.IP \(bu 2
+Environment printing with
+.B env
+.IP \(bu 2
+.B exit
+builtin
+.IP \(bu 2
+.B setenv
+and
+.B unsetenv
+builtins
+.IP \(bu 2
+.B cd
+builtin
+.IP \(bu 2
+Ctrl+C signal handling
+.IP \(bu 2
+File input mode
+.SH BUILTINS
+.TP
+.B exit [status]
+Exit the shell with an optional status.
+.TP
+.B env
+Print the current environment.
+.TP
+.B setenv VARIABLE VALUE
+Create or update an environment variable.
+.TP
+.B unsetenv VARIABLE
+Remove an environment variable.
+.TP
+.B cd [DIRECTORY]
+Change the current working directory.
+If no directory is given, the shell changes to
+.BR HOME .
+.SH FILE INPUT
+The shell can execute commands from a file:
+
+.B ./simple_shell commands.txt
+
+In this mode, no prompt is printed and commands are read from the file instead
+of standard input.
+.SH SIGNALS
+When the user presses Ctrl+C, the shell does not exit. It prints a new prompt
+and continues running.
 .SH EXAMPLES
+.TP
+Run the shell:
 .B ./simple_shell
-
-.B $ /bin/echo hello
+.TP
+Run a command:
+.B ($) ls -l
+.TP
+Run a command with arguments:
+.B ($) echo hello world
+.TP
+Print environment:
+.B ($) env
+.TP
+Set environment variable:
+.B ($) setenv NAME value
+.TP
+Unset environment variable:
+.B ($) unsetenv NAME
+.TP
+Change directory:
+.B ($) cd /tmp
+.TP
+Execute commands from a file:
+.B ./simple_shell commands.txt
+.SH RETURN VALUE
+The shell returns the exit status of the last executed command when possible.
 .SH AUTHORS
-See the AUTHORS file.
+Shouq Alqarni
+.br
+Baydir Aldossari
