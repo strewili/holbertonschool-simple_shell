@@ -107,9 +107,6 @@ The shell should return meaningful status values.
 ## Repository
 
 GitHub repository:
-
-```text
-holbertonschool-simple_shell
 DescriptionSimple Shell reads commands from standard input.
 Standard input is usually the keyboard.
 Standard input can also be a pipe.
@@ -136,16 +133,36 @@ The shell uses perror for some errors.
 The shell uses custom string functions in some files.
 The shell supports direct paths.
 Example direct path:
+sh
+
+
+
 /bin/ls
+
 The shell supports command names through PATH.
 Example command name:
+sh
+
+
+
 ls
+
 The shell supports commands with options.
 Example:
+sh
+
+
+
 ls -l
+
 The shell supports commands with many arguments.
 Example:
+sh
+
+
+
 echo hello world
+
 The shell supports builtins.
 Builtins are commands handled inside the shell.
 Builtins do not always require fork.
@@ -167,9 +184,19 @@ It shows why edge cases matter.
 It shows why coding style matters.
 It shows why simple programs still need careful design.
 CompilationCompile the project with:
+sh
+
+
+
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
+
 Another possible binary name is:
+sh
+
+
+
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o simple_shell
+
 The flags are important.
 -Wall enables many warnings.
 -Werror treats warnings as errors.
@@ -181,15 +208,40 @@ The project should compile without errors.
 The binary should be executable.
 The binary can be started from the terminal.
 UsageRun the shell interactively:
+sh
+
+
+
 ./hsh
+
 Run the shell with a pipe:
+sh
+
+
+
 echo "ls" | ./hsh
+
 Run the shell with a file:
+sh
+
+
+
 ./hsh commands.txt
+
 Exit the shell:
+sh
+
+
+
 exit
+
 Exit with a status:
+sh
+
+
+
 exit 98
+
 Interactive ModeInteractive mode happens when standard input is a terminal.
 In interactive mode, the shell prints a prompt.
 The user types a command.
@@ -197,9 +249,14 @@ The user presses Enter.
 The shell executes the command.
 The shell prints the prompt again.
 Example:
+sh
+
+
+
 ($) ls
 ($) pwd
 ($) exit
+
 The shell should not exit when Ctrl+C is pressed.
 The shell should print a new prompt after Ctrl+C.
 The shell should exit when Ctrl+D is pressed.
@@ -209,7 +266,12 @@ When EOF is received, the shell frees memory.
 Then the shell exits.
 Non-Interactive ModeNon-interactive mode happens when input comes from a pipe.
 Example:
+sh
+
+
+
 echo "ls -l" | ./hsh
+
 In this mode, the shell should not print a prompt.
 The shell reads the command.
 The shell executes the command.
@@ -219,7 +281,12 @@ This mode is useful for scripts.
 This mode is useful for checker programs.
 File Input ModeFile input mode happens when a filename is passed.
 Example:
+sh
+
+
+
 ./hsh commands.txt
+
 The file contains commands.
 Each command is written on its own line.
 The shell opens the file.
@@ -228,17 +295,32 @@ The shell executes each command.
 The shell does not print a prompt.
 The shell exits when the file ends.
 Example file:
+sh
+
+
+
 echo hello
 ls
 pwd
+
 Expected behavior:
+sh
+
+
+
 hello
 AUTHORS README.md main.c shell.h
 /path/to/current/directory
+
 If the file cannot be opened, the shell prints an error.
 The shell should return a failure status.
 PromptThe prompt used by this shell is:
+sh
+
+
+
 ($)
+
 The prompt appears only in interactive mode.
 The prompt tells the user the shell is ready.
 The prompt should appear before reading input.
@@ -259,36 +341,67 @@ The shell stores the status.
 The shell continues running.
 ArgumentsA command can have no arguments.
 Example:
+sh
+
+
+
 ls
+
 A command can have one argument.
 Example:
+sh
+
+
+
 ls -l
+
 A command can have many arguments.
 Example:
+sh
+
+
+
 echo hello Holberton School
+
 The shell splits the input line by delimiters.
 Common delimiters are spaces and tabs.
 The command name is argument zero.
 For this command:
+sh
+
+
+
 echo hello
+
 The argument array is:
+Add to chat
 args[0] = "echo"
 args[1] = "hello"
 args[2] = NULL
+
 The NULL at the end is required.
 execve needs the array to end with NULL.
 PATH HandlingPATH is an environment variable.
 PATH contains directories.
 Directories are separated by colons.
 Example:
+Add to chat
 /usr/local/bin:/usr/bin:/bin
+
 When the user types:
+sh
+
+
+
 ls
+
 The shell searches for ls in each directory.
 The shell may check:
+Add to chat
 /usr/local/bin/ls
 /usr/bin/ls
 /bin/ls
+
 The shell uses access to test the file.
 The file must exist.
 The file must be executable.
@@ -296,9 +409,19 @@ If a match is found, the shell executes it.
 If no match is found, the shell prints an error.
 If the command contains /, PATH is not needed.
 Example:
+sh
+
+
+
 /bin/ls
+
 Example:
+sh
+
+
+
 ./program
+
 BuiltinsBuiltins are commands implemented inside the shell.
 They do not need an external executable.
 Some builtins change the shell process itself.
@@ -307,63 +430,136 @@ If cd ran only in a child process, the parent directory would not change.
 This is why cd is a builtin.
 The shell supports common builtins.
 Supported builtins include:
+Add to chat
 exit
 env
 setenv
 unsetenv
 cd
+
 exit BuiltinThe exit builtin closes the shell.
 Usage:
+sh
+
+
+
 exit
+
 Usage with status:
+sh
+
+
+
 exit 0
+
 Another example:
+sh
+
+
+
 exit 98
+
 If no status is provided, the shell exits with the last status.
 If the status is invalid, the shell prints an error.
 Example invalid status:
+sh
+
+
+
 exit hello
+
 The shell should handle invalid numbers.
 The shell should free memory before exiting.
 env BuiltinThe env builtin prints environment variables.
 Usage:
+sh
+
+
+
 env
+
 Example output:
+Add to chat
 PATH=/usr/bin:/bin
 HOME=/home/user
 PWD=/home/user/project
+
 The shell uses environ.
 environ is a global variable.
 environ stores environment strings.
 Each environment string has this format:
+Add to chat
 NAME=value
+
 setenv BuiltinThe setenv builtin creates or updates an environment variable.
 Usage:
+sh
+
+
+
 setenv VARIABLE VALUE
+
 Example:
+sh
+
+
+
 setenv NAME Holberton
+
 After this, env may show:
+Add to chat
 NAME=Holberton
+
 If the variable already exists, its value is changed.
 If the command fails, an error should be printed.
 If arguments are missing, an error should be printed.
 unsetenv BuiltinThe unsetenv builtin removes an environment variable.
 Usage:
+sh
+
+
+
 unsetenv VARIABLE
+
 Example:
+sh
+
+
+
 unsetenv NAME
+
 After removal, NAME should not appear in env output.
 If the command fails, an error should be printed.
 If the argument is missing, an error should be printed.
 cd BuiltinThe cd builtin changes directory.
 Usage:
+sh
+
+
+
 cd DIRECTORY
+
 Example:
+sh
+
+
+
 cd /tmp
+
 To go to the parent directory:
+sh
+
+
+
 cd ..
+
 To go home:
+sh
+
+
+
 cd
+
 If no directory is given, cd uses HOME.
 The shell should update PWD after changing directory.
 The shell should update OLDPWD when possible.
@@ -376,9 +572,11 @@ The shell should print a new line.
 The shell should show a new prompt.
 The shell uses signal to handle SIGINT.
 Example handler behavior:
+Add to chat
 User presses Ctrl+C
 Shell prints new prompt
 Shell continues running
+
 EOF HandlingEOF means end of file.
 In terminal mode, Ctrl+D sends EOF.
 When EOF happens, the shell stops reading.
@@ -405,3 +603,5 @@ If unsetenv fails, print to stderr.
 If cd fails, print to stderr.
 Errors should not crash the shell.
 The shell should continue after recoverable errors.
+```text
+holbertonschool-simple_shell
