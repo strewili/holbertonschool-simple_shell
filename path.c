@@ -57,7 +57,8 @@ int _setenv(const char *variable, const char *value)
 
 	while (environ[i])
 	{
-		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
+		if (_strncmp(environ[i], variable, var_len) == 0 &&
+		    environ[i][var_len] == '=')
 		{
 			for (k = 0; k < alloc_count; k++)
 			{
@@ -101,7 +102,8 @@ int _unsetenv(const char *variable)
 
 	while (environ[i])
 	{
-		if (_strncmp(environ[i], variable, var_len) == 0 && environ[i][var_len] == '=')
+		if (_strncmp(environ[i], variable, var_len) == 0 &&
+		    environ[i][var_len] == '=')
 		{
 			j = i;
 			while (environ[j])

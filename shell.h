@@ -37,4 +37,4 @@ char *_strtok(char *str, const char *delim);
 char *trim_spaces(char *str);
 int _atoi(char *s);
 
-#endif /* SHELL_H */f
+#endif /* SHELL_H */
